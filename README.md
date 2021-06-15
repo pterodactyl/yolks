@@ -26,6 +26,10 @@ is tagged correctly.
 
 ## Available Images
 
+* [`alpine`](https://github.com/pterodactyl/yolks/tree/master/alpine)
+  * `ghcr.io/pterodactyl/yolks:alpine`
+* [`alpine`](https://github.com/pterodactyl/yolks/tree/master/debian)
+  * `ghcr.io/pterodactyl/yolks:debian`
 * [`fivem`](https://github.com/pterodactyl/yolks/tree/master/games/fivem)
   * `ghcr.io/pterodactyl/games:fivem`
 * [`golang`](https://github.com/pterodactyl/yolks/tree/master/go)
