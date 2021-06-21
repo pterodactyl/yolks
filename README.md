@@ -26,9 +26,9 @@ is tagged correctly.
 
 ## Available Images
 
-* [`alpine`](https://github.com/pterodactyl/yolks/tree/master/alpine)
+* [`alpine`](https://github.com/pterodactyl/yolks/tree/master/oses/alpine)
   * `ghcr.io/pterodactyl/yolks:alpine`
-* [`debian`](https://github.com/pterodactyl/yolks/tree/master/debian)
+* [`debian`](https://github.com/pterodactyl/yolks/tree/master/oses/debian)
   * `ghcr.io/pterodactyl/yolks:debian`
 * [`fivem`](https://github.com/pterodactyl/yolks/tree/master/games/fivem)
   * `ghcr.io/pterodactyl/games:fivem`
