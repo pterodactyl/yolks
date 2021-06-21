@@ -28,7 +28,7 @@ is tagged correctly.
 
 * [`alpine`](https://github.com/pterodactyl/yolks/tree/master/alpine)
   * `ghcr.io/pterodactyl/yolks:alpine`
-* [`alpine`](https://github.com/pterodactyl/yolks/tree/master/debian)
+* [`debian`](https://github.com/pterodactyl/yolks/tree/master/debian)
   * `ghcr.io/pterodactyl/yolks:debian`
 * [`fivem`](https://github.com/pterodactyl/yolks/tree/master/games/fivem)
   * `ghcr.io/pterodactyl/games:fivem`
