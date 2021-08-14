@@ -29,7 +29,7 @@ LABEL       org.opencontainers.image.licenses=MIT
 
 RUN         apk add --update --no-cache libstdc++ ca-certificates curl fontconfig git openssl sqlite tar tzdata \
 			    && adduser -D -h /home/container container \
-				&& apt install libfreetype6
+				&& apt-get install libfreetype6
 
 USER        container
 ENV         USER=container HOME=/home/container
