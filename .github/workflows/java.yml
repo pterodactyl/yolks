@@ -30,7 +30,7 @@ jobs:
         run: |
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
       - name: build image
-        run: docker build ../../../java/16 --file Dockerfile --tag sotredeveloepr/apakek:$(date +%s)
+        run: docker build ./java/16 --file Dockerfile --tag sotredeveloepr/apakek:$(date +%s)
       - name: push package gaguna
         run: docker push ${{secrets.DOCKER_USER}}/yolks
       - uses: docker/setup-qemu-action@v1
