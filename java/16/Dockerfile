@@ -27,8 +27,8 @@ LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
 LABEL       org.opencontainers.image.licenses=MIT
 
-RUN         apk add --update --no-cache libstdc++ ca-certificates curl fontconfig git openssl sqlite tar tzdata \
-			    && adduser -D -h /home/container container
+RUN         apk add --update --no-cache libstdc++ ca-certificates curl fontconfig ttf-dejavu msttcorefonts-installer git openssl sqlite tar tzdata \
+                            && adduser -D -h /home/container container
 
 USER        container
 ENV         USER=container HOME=/home/container
