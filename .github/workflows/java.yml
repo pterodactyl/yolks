@@ -1,7 +1,5 @@
 name: build java
 on:
-  schedule:
-    - cron: "34 22 * * *"
   push:
     branches:
       - master
