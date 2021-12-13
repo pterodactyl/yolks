@@ -14,11 +14,12 @@ jobs:
       matrix:
         tag:
           - 8
-          - 8j9
+          #- 8j9
           - 11
-          - 11j9
+          #- 11j9
           - 16
-          - 16j9
+          #- 16j9
+          - 17
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1

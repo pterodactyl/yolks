@@ -1,7 +1,5 @@
-#!/bin/ash
-
 #
-# Copyright (c) 2021 Matthew Penner
+# Copyright (c) 2021 Pterodactyl
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +20,31 @@
 # SOFTWARE.
 #
 
-# Default the TZ environment variable to UTC.
-TZ=${TZ:-UTC}
-export TZ
+FROM 		--platform=$TARGETOS/$TARGETARCH debian:bullseye-slim
 
-# Set environment variable that holds the Internal Docker IP
-INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
-export INTERNAL_IP
+LABEL       author="Isaac A." maintainer="isaac@isaacs.site"
 
-# Switch to the container's working directory
-cd /home/container || exit 1
+LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
+LABEL       org.opencontainers.image.licenses=MIT
 
-# Convert all of the "{{VARIABLE}}" parts of the command into the expected shell
-# variable format of "${VARIABLE}" before evaluating the string and automatically
-# replacing the values.
-PARSED=$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g' | eval echo "$(cat -)")
+ENV         DEBIAN_FRONTEND=noninteractive
 
-# Display the command we're running in the output, and then execute it with the env
-# from the container itself.
-printf "\033[1m\033[33mcontainer@pterodactyl~ \033[0m%s\n" "$PARSED"
-# shellcheck disable=SC2086
-exec env ${PARSED}
+RUN			dpkg --add-architecture i386 \
+			&& apt update \
+			&& apt upgrade -y \
+			&& apt install -y lib32gcc-s1 lib32stdc++6 unzip curl iproute2 tzdata libgdiplus libsdl2-2.0-0:i386 \
+			&& curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+			&& apt install -y nodejs \
+			&& mkdir /node_modules \
+			&& npm install --prefix / ws \
+			&& useradd -d /home/container -m container
+
+USER 		container
+ENV  		USER=container HOME=/home/container
+
+WORKDIR 	/home/container
+
+COPY 		./entrypoint.sh /entrypoint.sh
+COPY 		./wrapper.js /wrapper.js
+
+CMD			[ "/bin/bash", "/entrypoint.sh" ]

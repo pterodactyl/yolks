@@ -1,5 +1,6 @@
 name: build games
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * 1"
   push:
@@ -15,8 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         game:
-          - fivem
           - source
+          - rust
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-buildx-action@v1
