@@ -2,7 +2,7 @@
 cd /home/container
 
 # Make internal Docker IP address available to processes.
-export INTERNAL_IP=`ip route get 1 | awk '{print $NF;exit}'`
+export INTERNAL_IP=`ip addr show $(ip route | awk '/default/ { print $5 }') | grep "inet" | head -n 1 | awk '/inet/ {print $2}' | cut -d'/' -f1`
 
 # Update Rust Server
 ./steamcmd/steamcmd.sh +force_install_dir /home/container +login anonymous +app_update 258550 +quit

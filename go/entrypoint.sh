@@ -27,7 +27,7 @@ TZ=${TZ:-UTC}
 export TZ
 
 # Set environment variable that holds the Internal Docker IP
-INTERNAL_IP=$(ip route get 1 | awk '{print $NF;exit}')
+INTERNAL_IP=$(ip addr show $(ip route | awk '/default/ { print $5 }') | grep "inet" | head -n 1 | awk '/inet/ {print $2}' | cut -d'/' -f1)
 export INTERNAL_IP
 
 # Switch to the container's working directory
