@@ -55,8 +55,6 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:java_11`
   * [`java11 - OpenJ9`](https://github.com/pterodactyl/yolks/tree/master/java/11j9)
     * `ghcr.io/pterodactyl/yolks:java_11j9`
-  * [`java11_lsof`](https://github.com/pterodactyl/yolks/tree/master/java/11_lsof)
-  	* `ghcr.io/pterodactyl/yolks:java_11_lsof`
   * [`java16`](https://github.com/pterodactyl/yolks/tree/master/java/16)
     * `ghcr.io/pterodactyl/yolks:java_16`
   * [`java16 - OpenJ9`](https://github.com/pterodactyl/yolks/tree/master/java/16j9)
