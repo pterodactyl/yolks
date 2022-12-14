@@ -39,7 +39,7 @@ cd /home/container || exit 1
 # Convert all of the "{{VARIABLE}}" parts of the command into the expected shell
 # variable format of "${VARIABLE}" before evaluating the string and automatically
 # replacing the values.
-PARSED=$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g' | eval echo "$(cat -)")
+PARSED=$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g' | eval "echo \"$(cat -)\""
 
 ## just in case someone removed the defaults.
 if [ "${STEAM_USER}" == "" ]; then
