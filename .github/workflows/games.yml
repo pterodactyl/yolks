@@ -36,4 +36,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/MCAstroWRLD/games:${{ matrix.game }}
+            ghcr.io/mcastrowrld/games:${{ matrix.game }}
