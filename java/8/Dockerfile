@@ -25,12 +25,8 @@
 # latest Forge release. This should be removed when the manifest constructor class
 # issue is backported or if Forge decides to abandon old versions and we need
 # newer Java versions. Old Quay images were updated like once a year, so it's ok.
-#
-# Update: This issue has been resolved, see issue below for more info - No767 (Noelle)
-# For reference, the old hard coded version is 8u312-slim
-# @see https://github.com/McModLauncher/modlauncher/issues/91
 
-FROM        --platform=$TARGETOS/$TARGETARCH eclipse-temurin:8-jdk-jammy
+FROM        --platform=$TARGETOS/$TARGETARCH openjdk:8u312-slim
 
 LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 
