@@ -26,7 +26,7 @@
 # issue is backported or if Forge decides to abandon old versions and we need
 # newer Java versions. Old Quay images were updated like once a year, so it's ok.
 
-FROM        --platform=$TARGETOS/$TARGETARCH openjdk:11.0.13-slim
+FROM        --platform=$TARGETOS/$TARGETARCH eclipse-temurin:11.0.13_8-jdk-focal
 
 LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 
