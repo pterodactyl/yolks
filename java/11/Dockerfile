@@ -25,6 +25,8 @@
 # latest Forge release. This should be removed when the manifest constructor class
 # issue is backported or if Forge decides to abandon old versions and we need
 # newer Java versions. Old Quay images were updated like once a year, so it's ok.
+#
+# @see https://github.com/McModLauncher/modlauncher/issues/91
 
 FROM        --platform=$TARGETOS/$TARGETARCH eclipse-temurin:11.0.13_8-jdk-focal
 
