@@ -8,9 +8,12 @@ on:
       - master
     paths:
       - installers/**
+
+# Two separate jobs, first for multiarch (amd64, arm64), second for amd64 only
+
 jobs:
-  both:
-    name: "yolks:installer_both:${{ matrix.tag }}"
+  pushMultiArch:
+    name: "yolks:installers_multiarch:${{ matrix.tag }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -23,17 +26,10 @@ jobs:
         with:
           version: "v0.9.1"
           buildkitd-flags: --debug
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@master
+      - name: Setup QEMU for multiarch builds
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: arm64,amd64
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -44,18 +40,12 @@ jobs:
           context: ./installers
           file: ./installers/${{ matrix.tag }}/Dockerfile
           platforms: linux/amd64,linux/arm64
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
           push: true
           tags: |
             ghcr.io/pterodactyl/installers:${{ matrix.tag }}
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   pushAmd:
-    name: "yolks:installer_Amd:${{ matrix.tag }}"
+    name: "yolks:installers_amd:${{ matrix.tag }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -64,16 +54,16 @@ jobs:
           - debian
     steps:
       - uses: actions/checkout@v2
-      - uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-buildx-action@v2
         with:
           version: "v0.7.0"
           buildkitd-flags: --debug
-      - uses: docker/login-action@v1
+      - uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.REGISTRY_TOKEN }}
-      - uses: docker/build-push-action@v2
+      - uses: docker/build-push-action@v3
         with:
           context: ./installers
           file: ./installers/${{ matrix.tag }}/Dockerfile
