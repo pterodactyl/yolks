@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-FROM        --platform=$TARGETOS/$TARGETARCH openjdk:18-slim
+FROM        --platform=$TARGETOS/$TARGETARCH eclipse-temurin:18-jdk-jammy
 
 LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 
