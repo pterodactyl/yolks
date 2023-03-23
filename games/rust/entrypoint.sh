@@ -3,17 +3,11 @@ cd /home/container
 
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=`ip route get 1 | awk '{print $(NF-2);exit}'`
-export SRCDS_APPID=258550
+
 
 ## if auto_update is not set or to 1 update
 if [ -z ${AUTO_UPDATE} ] || [ "${AUTO_UPDATE}" == "1" ]; then
-    # Update Source Server
-    if [ ! -z ${SRCDS_APPID} ]; then
-        ./steamcmd/steamcmd.sh +force_install_dir /home/container +login anonymous +app_update ${SRCDS_APPID} +quit
-    else
-        echo -e "No appid set. Starting Server"
-    fi
-
+	./steamcmd/steamcmd.sh +force_install_dir /home/container +login anonymous +app_update 258550 +quit
 else
     echo -e "Not updating game server as auto update was set to 0. Starting Server"
 fi
