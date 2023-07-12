@@ -67,6 +67,10 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:java_18`
   * [`java18 - OpenJ9`](https://github.com/pterodactyl/yolks/tree/master/java/18j9)
     * `ghcr.io/pterodactyl/yolks:java_18j9`
+  * [`java19`](https://github.com/pterodactyl/yolks/tree/master/java/19)
+    * `ghcr.io/pterodactyl/yolks:java_19`
+  * [`java19 - OpenJ9`](https://github.com/pterodactyl/yolks/tree/master/java/19j9)
+    * `ghcr.io/pterodactyl/yolks:java_19j9`
 * [`nodejs`](https://github.com/pterodactyl/yolks/tree/master/nodejs)
   * [`node12`](https://github.com/pterodactyl/yolks/tree/master/nodejs/12)
     * `ghcr.io/pterodactyl/yolks:nodejs_12`
