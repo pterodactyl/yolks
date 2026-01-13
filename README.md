@@ -75,7 +75,7 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:java_19j9`
   * [`java21`](https://github.com/pterodactyl/yolks/tree/master/java/21)
     * `ghcr.io/pterodactyl/yolks:java_21`
-  * [`java21`](https://github.com/pterodactyl/yolks/tree/master/java/25)
+  * [`java25`](https://github.com/pterodactyl/yolks/tree/master/java/25)
     * `ghcr.io/pterodactyl/yolks:java_25`
 * [`nodejs`](https://github.com/pterodactyl/yolks/tree/master/nodejs)
   * [`node12`](https://github.com/pterodactyl/yolks/tree/master/nodejs/12)
