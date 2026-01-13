@@ -9,7 +9,14 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 
 	unzip -o HytaleServer.zip -d .
 
-	rm -f HytaleServer.zip 2>/dev/null || true
+	rm -f HytaleServer.zip
+elif [[ -f "HytaleServer.zip" ]]; then
+	unzip -o HytaleServer.zip -d .
+elif [[ -f "HytaleMount/HytaleServer.zip" ]]; then
+	unzip -o HytaleMount/HytaleServer.zip -d .
+else
+	echo -e "FATAL: HYTALE_SERVER_SESSION_TOKEN is set, but neither ./HytaleMount/HytaleServer.zip or ./HytaleServer.zip are present."
+	exit 1
 fi
 
 /java.sh $@
