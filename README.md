@@ -37,6 +37,8 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/games:rust`
   * [`source`](https://github.com/pterodactyl/yolks/tree/master/games/source)
     * `ghcr.io/pterodactyl/games:source`
+  * [`hytale`](https://github.com/pterodactyl/yolks/tree/master/games/hytale)
+    * `ghcr.io/pterodactyl/games:hytale`
 * [`golang`](https://github.com/pterodactyl/yolks/tree/master/go)
   * [`go1.14`](https://github.com/pterodactyl/yolks/tree/master/go/1.14)
     * `ghcr.io/pterodactyl/yolks:go_1.14`
@@ -73,6 +75,8 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:java_19j9`
   * [`java21`](https://github.com/pterodactyl/yolks/tree/master/java/21)
     * `ghcr.io/pterodactyl/yolks:java_21`
+  * [`java21`](https://github.com/pterodactyl/yolks/tree/master/java/25)
+    * `ghcr.io/pterodactyl/yolks:java_25`
 * [`nodejs`](https://github.com/pterodactyl/yolks/tree/master/nodejs)
   * [`node12`](https://github.com/pterodactyl/yolks/tree/master/nodejs/12)
     * `ghcr.io/pterodactyl/yolks:nodejs_12`
