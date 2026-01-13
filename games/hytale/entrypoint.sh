@@ -9,7 +9,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 
 	unzip -o HytaleServer.zip -d .
 
-	rm HytaleServer.zip
+	rm -f HytaleServer.zip 2>/dev/null || true
 fi
 
 /java.sh $@
