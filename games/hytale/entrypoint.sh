@@ -10,10 +10,10 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	unzip -o HytaleServer.zip -d .
 
 	rm -f HytaleServer.zip
-elif [[ -f "HytaleServer.zip" ]]; then
-	unzip -o HytaleServer.zip -d .
 elif [[ -f "HytaleMount/HytaleServer.zip" ]]; then
 	unzip -o HytaleMount/HytaleServer.zip -d .
+elif [[ -f "HytaleServer.zip" ]]; then
+	unzip -o HytaleServer.zip -d .
 fi
 
 # Download the latest hytale-sourcequery plugin if enabled
