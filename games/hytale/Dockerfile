@@ -33,7 +33,7 @@ COPY        --from=ghcr.io/pterodactyl/yolks:java_25 entrypoint.sh /java.sh
 RUN 		chmod +x /java.sh
 
 RUN			apt-get update -y \
-				&& apt-get install -y unzip \
+				&& apt-get install -y unzip jq \
 				&& rm -rf /var/lib/apt/lists/*
 
 USER        container
