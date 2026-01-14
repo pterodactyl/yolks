@@ -16,4 +16,18 @@ elif [[ -f "HytaleMount/HytaleServer.zip" ]]; then
 	unzip -o HytaleMount/HytaleServer.zip -d .
 fi
 
+# Download the latest hytale-sourcequery plugin if enabled
+if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
+	mkdir -p mods
+	echo "Downloading latest hytale-sourcequery plugin..."
+	LATEST_URL=$(curl -sSL https://api.github.com/repos/physgun-com/hytale-sourcequery/releases/latest \
+		| grep -oP '"browser_download_url":\s*"\K[^"]+\.jar' || true)
+	if [[ -n "$LATEST_URL" ]]; then
+		curl -sSL -o mods/hytale-sourcequery.jar "$LATEST_URL"
+		echo "Successfully downloaded hytale-sourcequery plugin to mods folder."
+	else
+		echo "Warning: Could not find hytale-sourcequery plugin download URL."
+	fi
+fi
+
 /java.sh $@
