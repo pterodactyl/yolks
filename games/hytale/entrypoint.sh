@@ -12,6 +12,8 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	rm -f HytaleServer.zip
 elif [[ -f "HytaleMount/HytaleServer.zip" ]]; then
 	unzip -o HytaleMount/HytaleServer.zip -d .
+elif [[ -f "HytaleMount/Assets.zip" ]]; then
+	ln -s -f HytaleMount/Assets.zip Assets.zip
 elif [[ -f "HytaleServer.zip" ]]; then
 	unzip -o HytaleServer.zip -d .
 fi
