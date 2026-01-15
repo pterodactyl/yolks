@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Generate machine-id if it doesn't exist
+if [[ ! -f /etc/machine-id ]]; then
+	dd if=/dev/urandom bs=16 count=1 2>/dev/null | xxd -p -c 16 | sudo tee /etc/machine-id >/dev/null
+fi
+
 cd /home/container
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
