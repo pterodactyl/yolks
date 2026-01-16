@@ -1,0 +1,25 @@
+name: Mirror to GitLab
+
+on:
+  workflow_dispatch:
+  push:
+  delete:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full repo (all history + refs)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mirror push to GitLab
+        env:
+          GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
+        run: |
+          git remote add gitlab "https://oauth2:${GITLAB_PAT}@gitlab.com/zzahkaboom24/yolks.git" || true
+          
+          git remote update --prune origin
+          
+          git push --mirror gitlab
