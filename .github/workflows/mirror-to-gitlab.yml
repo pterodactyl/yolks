@@ -2,7 +2,11 @@ name: Mirror to GitLab
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 * *"
   push:
+    branches:
+      - master
   delete:
 
 jobs:
@@ -22,4 +26,5 @@ jobs:
           
           git remote update --prune origin
           
-          git push --mirror gitlab
+          git push gitlab --force --prune --all
+          git push gitlab --force --tags
