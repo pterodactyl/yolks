@@ -48,6 +48,16 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:go_1.16`
   * [`go1.17`](https://github.com/pterodactyl/yolks/tree/master/go/1.17)
     * `ghcr.io/pterodactyl/yolks:go_1.17`
+  * [`go1.18`](https://github.com/pterodactyl/yolks/tree/master/go/1.18)
+    * `ghcr.io/pterodactyl/yolks:go_1.18`
+  * [`go1.19`](https://github.com/pterodactyl/yolks/tree/master/go/1.19)
+    * `ghcr.io/pterodactyl/yolks:go_1.19`
+  * [`go1.20`](https://github.com/pterodactyl/yolks/tree/master/go/1.20)
+    * `ghcr.io/pterodactyl/yolks:go_1.20`
+  * [`go1.21`](https://github.com/pterodactyl/yolks/tree/master/go/1.21)
+    * `ghcr.io/pterodactyl/yolks:go_1.21`
+  * [`go1.22`](https://github.com/pterodactyl/yolks/tree/master/go/1.22)
+    * `ghcr.io/pterodactyl/yolks:go_1.22`
 * [`java`](https://github.com/pterodactyl/yolks/tree/master/java)
   * [`java8`](https://github.com/pterodactyl/yolks/tree/master/java/8)
     * `ghcr.io/pterodactyl/yolks:java_8`
@@ -90,7 +100,7 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:nodejs_17`
   * [`node18`](https://github.com/pterodactyl/yolks/tree/master/nodejs/18)
     * `ghcr.io/pterodactyl/yolks:nodejs_18`
-  * [`node20`](https://github.com/pterodactyl/yolks/tree/master/nodejs/18)
+  * [`node20`](https://github.com/pterodactyl/yolks/tree/master/nodejs/20)
     * `ghcr.io/pterodactyl/yolks:nodejs_20`
 * [`python`](https://github.com/pterodactyl/yolks/tree/master/python)
   * [`python3.7`](https://github.com/pterodactyl/yolks/tree/master/python/3.7)
@@ -101,6 +111,10 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:python_3.9`
   * [`python3.10`](https://github.com/pterodactyl/yolks/tree/master/python/3.10)
     * `ghcr.io/pterodactyl/yolks:python_3.10`
+  * [`python3.11`](https://github.com/pterodactyl/yolks/tree/master/python/3.11)
+    * `ghcr.io/pterodactyl/yolks:python_3.11`
+  * [`python3.12`](https://github.com/pterodactyl/yolks/tree/master/python/3.12)
+    * `ghcr.io/pterodactyl/yolks:python_3.12`
 
 ### Installation Images
 
