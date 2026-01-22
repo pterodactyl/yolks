@@ -1,12 +1,15 @@
 #!/bin/bash
 set -e
+set -x
 
 cd /home/container
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
-        
-	curversion=$(./hytale-downloader/hytale-downloader-linux -print-version)
+
+	# Running the version check without storing it once to run the authentication
+	./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -print-version
+	curversion=$(./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -print-version)
         
 	if ! [[ -e version ]] || [ "$curversion" != "$(cat "version")" ]; then
 		./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
