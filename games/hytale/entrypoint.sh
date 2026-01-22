@@ -5,17 +5,21 @@ cd /home/container
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
-        
-	curversion=$(./hytale-downloader/hytale-downloader-linux -print-version)
-        
+
+	echo -e "Checking for Hytale server update..."
+
+	curversion=$(timeout 5s ./hytale-downloader/hytale-downloader-linux -print-version || true)
+
 	if ! [[ -e version ]] || [ "$curversion" != "$(cat "version")" ]; then
+		echo -e "New update available, downloading version $curversion..."
+
 		./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
 
 		unzip -o HytaleServer.zip -d .
 		rm -f HytaleServer.zip
 		echo "$curversion" > version
 	fi
-	
+
 elif [[ -f "HytaleMount/HytaleServer.zip" ]]; then
 	unzip -o HytaleMount/HytaleServer.zip -d .
 elif [[ -f "HytaleMount/Assets.zip" ]]; then
