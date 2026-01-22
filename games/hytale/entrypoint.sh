@@ -8,7 +8,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 
 	echo -e "Checking for Hytale server update..."
 
-	curversion=$(timeout 5s ./hytale-downloader/hytale-downloader-linux -print-version || true)
+	curversion=$(timeout 5s ./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -print-version || true)
 
 	if ! [[ -e version ]] || [ "$curversion" != "$(cat "version")" ]; then
 		echo -e "New update available, downloading version $curversion..."
