@@ -42,11 +42,17 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - id: platforms
+        run: |
+          PLATFORMS="linux/amd64,linux/arm64,linux/ppc64le"
+          if [[ "${{ matrix.tag }}" == *"j9"* ]]; then
+            PLATFORMS="linux/amd64,linux/arm64"
+          fi
       - uses: docker/build-push-action@v4
         with:
           context: ./java
           file: ./java/${{ matrix.tag }}/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ steps.platforms.outputs.platforms }}
           push: true
           tags: |
             ghcr.io/pterodactyl/yolks:java_${{ matrix.tag }}
