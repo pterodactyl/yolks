@@ -8,18 +8,18 @@ if [[ -f ./config.json || -f ./HytaleServer.jar || -f ./HytaleServer.aot || -f .
 	if [[ ! -d "/home/container/Server" ]]; then
 		mkdir -p /home/container/Server
 	fi
-	mv ./Licenses ./Server
-	mv ./logs ./Server
-	mv ./mods ./Server
-	mv ./universe ./Server
-	mv ./auth.enc ./Server
-	mv ./bans.json ./Server
-	mv ./config.json ./Server
-	mv ./config.json.bak ./Server
-	mv ./HytaleServer.jar ./Server
-	mv ./HytaleServer.aot ./Server
-	mv ./permissions.json ./Server
-	mv ./whitelist.json ./Server
+	mv ./Licenses ./Server || true
+	mv ./logs ./Server || true
+	mv ./mods ./Server || true
+	mv ./universe ./Server || true
+	mv ./auth.enc ./Server || true
+	mv ./bans.json ./Server || true
+	mv ./config.json ./Server || true
+	mv ./config.json.bak ./Server || true
+	mv ./HytaleServer.jar ./Server || true
+	mv ./HytaleServer.aot ./Server || true
+	mv ./permissions.json ./Server || true
+	mv ./whitelist.json ./Server || true
 fi
 
 # Respect the user's patchline wish, if they so choose to change it from the server console
