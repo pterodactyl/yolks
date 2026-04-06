@@ -42,7 +42,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/pterodactyl/installers:${{ matrix.tag }}
+            ghcr.io/alttky567/installers:${{ matrix.tag }}
 
   pushAmd:
     name: "yolks:installers_amd:${{ matrix.tag }}"
@@ -70,4 +70,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/pterodactyl/installers:${{ matrix.tag }}
+            ghcr.io/alttky567/installers:${{ matrix.tag }}

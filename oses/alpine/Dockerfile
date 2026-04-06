@@ -24,11 +24,41 @@ FROM        --platform=$TARGETOS/$TARGETARCH alpine:latest
 
 LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 
-LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
+LABEL       org.opencontainers.image.source="https://github.com/alttky567/pterodactyl-build"
 LABEL       org.opencontainers.image.licenses=MIT
 
-RUN         apk add --update --no-cache ca-certificates tzdata \
-				&& adduser -D -h /home/container container
+RUN         apk add --update --no-cache \
+	autoconf \
+	automake \
+	binutils \
+	build-base \
+	ca-certificates \
+	clang \
+	clang-dev \
+	cmake \
+	curl \
+	g++ \
+	gcc \
+	gdb \
+	git \
+	libc-dev \
+	libffi-dev \
+	libstdc++ \
+	libtool \
+	linux-headers \
+	make \
+	musl-dev \
+	ninja \
+	openssl \
+	openssl-dev \
+	patch \
+	pkgconf \
+	python3 \
+	sqlite \
+	tar \
+	tzdata \
+	zlib-dev \
+	&& adduser -D -h /home/container container
 
 USER        container
 ENV         USER=container HOME=/home/container
