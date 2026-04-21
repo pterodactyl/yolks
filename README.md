@@ -97,6 +97,12 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:java_19j9`
   * [`java21`](/java/21)
     * `ghcr.io/pterodactyl/yolks:java_21`
+  * [`java22`](/java/22)
+    * `ghcr.io/pterodactyl/yolks:java_22`
+  * [`java23`](/java/23)
+    * `ghcr.io/pterodactyl/yolks:java_23`
+  * [`java24`](/java/24)
+    * `ghcr.io/pterodactyl/yolks:java_24`
   * [`java25`](/java/25)
     * `ghcr.io/pterodactyl/yolks:java_25`
 
