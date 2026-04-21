@@ -50,6 +50,25 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/yolks:go_1.16`
   * [`go1.17`](/go/1.17)
     * `ghcr.io/pterodactyl/yolks:go_1.17`
+  * [`go1.18`](/go/1.18)
+    * `ghcr.io/pterodactyl/yolks:go_1.18`
+  * [`go1.19`](/go/1.19)
+    * `ghcr.io/pterodactyl/yolks:go_1.19`
+  * [`go1.20`](/go/1.20)
+    * `ghcr.io/pterodactyl/yolks:go_1.20`
+  * [`go1.21`](/go/1.21)
+    * `ghcr.io/pterodactyl/yolks:go_1.21`
+  * [`go1.22`](/go/1.22)
+    * `ghcr.io/pterodactyl/yolks:go_1.22`
+  * [`go1.23`](/go/1.23)
+    * `ghcr.io/pterodactyl/yolks:go_1.23`
+  * [`go1.24`](/go/1.24)
+    * `ghcr.io/pterodactyl/yolks:go_1.24`
+  * [`go1.25`](/go/1.25)
+    * `ghcr.io/pterodactyl/yolks:go_1.25`
+  * [`go1.26`](/go/1.26)
+    * `ghcr.io/pterodactyl/yolks:go_1.26`
+    * `ghcr.io/pterodactyl/yolks:go_latest`
 
 * [`java`](/java)
   * [`java8`](/java/8)

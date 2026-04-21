@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-FROM        --platform=$TARGETOS/$TARGETARCH golang:1.17-alpine
+FROM        --platform=$TARGETOS/$TARGETARCH golang:1.21-alpine
 
 LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 
@@ -36,5 +36,5 @@ WORKDIR     /home/container
 
 ENV			YOLK_EOL_NAG_WARNING=1
 
-COPY		--chmod=755 --chown=root:root ../entrypoint.sh /entrypoint.sh
+COPY 		--chmod=755 --chown=root:root ../entrypoint.sh /entrypoint.sh
 ENTRYPOINT	["/entrypoint.sh"]

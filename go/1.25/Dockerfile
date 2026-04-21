@@ -20,21 +20,20 @@
 # SOFTWARE.
 #
 
-FROM        --platform=$TARGETOS/$TARGETARCH golang:1.17-alpine
+FROM        --platform=$TARGETOS/$TARGETARCH golang:1.25-alpine
 
 LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 
 LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
 LABEL       org.opencontainers.image.licenses=MIT
 
-RUN         apk add --update --no-cache ca-certificates tzdata \
-			&& adduser -D -h /home/container container
+#hadolint ignore=DL3018
+RUN         apk add --update --no-cache ca-certificates tzdata
 
-USER        container
+
 ENV         USER=container HOME=/home/container
+ENV         GOMODCACHE=/home/container/.go-modcache
 WORKDIR     /home/container
-
-ENV			YOLK_EOL_NAG_WARNING=1
 
 COPY		--chmod=755 --chown=root:root ../entrypoint.sh /entrypoint.sh
 ENTRYPOINT	["/entrypoint.sh"]
