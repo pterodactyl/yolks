@@ -42,7 +42,7 @@ FLAGS = {
     'allow_op': os.getenv("ALLOW_OP", "0") == "1",
     'early_plugins': os.getenv("ACCEPT_EARLY_PLUGINS", "0") == "1",
     'disable_sentry': os.getenv("DISABLE_SENTRY", "0") == "1",
-    'skip_mod_validation': os.getenv("SKIP_MOD_VALIDATION", "0") == "1",
+    'ignore_broken_mods': os.getenv("IGNORE_BROKEN_MODS", "0") == "1",
     'world_backup': os.getenv("ENABLE_WORLD_BACKUP", "1") == "1",
     'server_backup': os.getenv("ENABLE_SERVER_BACKUP", "1") == "1",
 }
@@ -718,7 +718,7 @@ def main():
     if FLAGS['allow_op']: server_flags.append("--allow-op")
     if FLAGS['early_plugins']: server_flags.append("--accept-early-plugins")
     if FLAGS['disable_sentry']: server_flags.append("--disable-sentry")
-    if FLAGS['skip_mod_validation']: server_flags.append("--skip-mod-validation")
+    if FLAGS['ignore_broken_mods']: server_flags.append("--ignore-broken-mods")
     if FLAGS['world_backup']:
         server_flags.extend(["--backup", f"--backup-dir", f"../{os.getenv('BACKUP_DIR', 'Backups')}",
             "--backup-frequency", os.getenv('BACKUP_FREQUENCY', '30'),
