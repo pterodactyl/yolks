@@ -734,15 +734,28 @@ def main():
             die("[startup] STARTUP_JSON must be JSON array of strings")
     else:
         startup = re.sub(r'\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}', lambda m: os.getenv(m.group(1), ""), startup)
+        startup = re.sub(r'\$\{([A-Za-z_][A-Za-z0-9_]*)\}', lambda m: os.getenv(m.group(1), ""), startup)
         if not startup.strip(): die("[startup] Empty STARTUP")
         cmd = shlex.split(startup)
 
     # Inject flags if this is a Java command with -jar
     if cmd and any("java" in str(arg).lower() for arg in cmd[:3]) and "-jar" in cmd:
         jar_flag_idx = cmd.index("-jar")
-        jar_idx = jar_flag_idx + 1  # jar file is right after -jar
-        # Insert: [before -jar] + jvm_flags + [-jar jarfile.jar] + server_flags + [rest]
-        cmd = cmd[:jar_flag_idx] + jvm_flags + cmd[jar_flag_idx:jar_idx+1] + server_flags + cmd[jar_idx+1:]
+        jar_idx = jar_flag_idx + 1
+        pre_jar, post_jar = cmd[:jar_flag_idx], cmd[jar_idx+1:]
+        # Drop injections the user already specified to avoid duplicate-arg crashes (joptsimple rejects repeated value options)
+        pre_names = {a.split("=", 1)[0] for a in pre_jar}
+        jvm_flags = [f for f in jvm_flags if f.split("=", 1)[0] not in pre_names]
+        deduped, i = [], 0
+        while i < len(server_flags):
+            pair = i+1 < len(server_flags) and not server_flags[i+1].startswith("-")
+            if server_flags[i] in post_jar:
+                i += 2 if pair else 1
+            else:
+                deduped.append(server_flags[i])
+                if pair: deduped.append(server_flags[i+1]); i += 2
+                else: i += 1
+        cmd = pre_jar + jvm_flags + cmd[jar_flag_idx:jar_idx+1] + deduped + post_jar
     os.chdir(SERVER_DIR)
     # Final version confirmation before launch
     final_version = version_file.read_text().strip() if version_file.exists() else "unknown"
