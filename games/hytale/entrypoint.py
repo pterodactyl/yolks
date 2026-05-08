@@ -271,9 +271,11 @@ class AuthManager:
                 log(C['Y'], f"[auth] Session cleanup returned HTTP {resp.status_code} (non-fatal)")
         except Exception as e:
             log(C['Y'], f"[auth] Session cleanup error: {e} (non-fatal)")
-        self.state.session_token = self.state.identity_token = ""
-        self.state.session_expires = 0
-        self.state.save(self.state_path)
+        fresh = AuthState.load(self.state_path) or self.state
+        fresh.session_token = fresh.identity_token = ""
+        fresh.session_expires = 0
+        fresh.save(self.state_path)
+        self.state = fresh
 
 def parse_jar_version(jar_path):
     """Extract version and patchline from JAR manifest for metadata tracking."""
