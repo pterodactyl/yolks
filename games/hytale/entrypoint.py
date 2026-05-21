@@ -263,8 +263,8 @@ class AuthManager:
             return
         log(C['B'], "[auth] Cleaning up game session")
         try:
-            resp = self.session.delete(HYTALE_SESSION_LOGOUT_URL,
-                headers={'Authorization': f'Bearer {self.state.session_token}'}, timeout=10)
+            resp = requests.delete(HYTALE_SESSION_LOGOUT_URL,
+                headers={'Authorization': f'Bearer {self.state.session_token}'}, timeout=3)
             if resp.status_code in (200, 204):
                 log(C['G'], "[auth] ✓ Session terminated")
             else:
