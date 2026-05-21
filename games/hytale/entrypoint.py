@@ -49,7 +49,7 @@ FLAGS = {
 
 HYTALE_PROFILE_UUID = os.getenv("HYTALE_PROFILE_UUID", "")
 HYTALE_AUTH_STATE_PATH = Path(os.getenv("HYTALE_AUTH_STATE_PATH", str(ROOT_DIR / ".hytale-auth.json")))
-SERVER_BACKUP_RETENTION = int(os.getenv("SERVER_BACKUP_RETENTION", "2"))
+SERVER_BACKUP_RETENTION = max(1, int(os.getenv("SERVER_BACKUP_RETENTION", "2")))
 
 HYTALE_ASSETS_API = "https://account-data.hytale.com/game-assets"
 MAVEN_BASE_URL = "https://maven.hytale.com"
@@ -61,7 +61,7 @@ HYTALE_SESSION_LOGOUT_URL = "https://sessions.hytale.com/game-session"
 OAUTH_CLIENT_ID = "hytale-server"
 OAUTH_SCOPE = "openid offline auth:server"
 
-VERSION_PATTERN = r'^\d{4}\.\d{2}\.\d{2}-[a-f0-9]+$'
+VERSION_PATTERN = r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$'
 VERSION_FILE = ".version"
 PATCHLINE_FILE = ".patchline"
 BACKUP_SERVER_FILES = ["HytaleServer.jar", "HytaleServer.aot", ".version", ".patchline"]
@@ -443,22 +443,25 @@ def api_download(session, auth_mgr, patchline, target_dir):
                         print(f"\r[api] {downloaded/(1024*1024):.1f}/{total/(1024*1024):.1f} MB ({100*downloaded/total:.0f}%)", end='', file=sys.stderr)
             if total > 0:
                 print(file=sys.stderr)
-            if sha256_expected:
-                h = hashlib.sha256()
-                with open(zip_path, 'rb') as hf:
-                    while blk := hf.read(65536):
-                        h.update(blk)
-                if h.hexdigest() != sha256_expected:
-                    log(C['Y'], "[api] SHA-256 mismatch, retrying")
-                    zip_path.unlink()
-                    continue
+            if not sha256_expected:
+                log(C['Y'], "[api] No SHA-256 in manifest, refusing download")
+                zip_path.unlink()
+                continue
+            h = hashlib.sha256()
+            with open(zip_path, 'rb') as hf:
+                while blk := hf.read(65536):
+                    h.update(blk)
+            if h.hexdigest() != sha256_expected:
+                log(C['Y'], "[api] SHA-256 mismatch, retrying")
+                zip_path.unlink()
+                continue
             log(C['G'], "[api] ✓ Verified")
             log(C['B'], "[api] Extracting...")
             with zipfile.ZipFile(zip_path) as zf:
                 target_resolved = target_dir.resolve()
                 for member in zf.infolist():
                     dest = (target_dir / member.filename).resolve()
-                    if not str(dest).startswith(str(target_resolved)):
+                    if not dest.is_relative_to(target_resolved):
                         log(C['Y'], f"[api] Skipping unsafe zip entry: {member.filename}")
                         continue
                     if member.is_dir():
