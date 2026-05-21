@@ -49,7 +49,7 @@ FLAGS = {
 
 HYTALE_PROFILE_UUID = os.getenv("HYTALE_PROFILE_UUID", "")
 HYTALE_AUTH_STATE_PATH = Path(os.getenv("HYTALE_AUTH_STATE_PATH", str(ROOT_DIR / ".hytale-auth.json")))
-SERVER_BACKUP_RETENTION = max(1, int(os.getenv("SERVER_BACKUP_RETENTION", "2")))
+SERVER_BACKUP_RETENTION = int(os.getenv("SERVER_BACKUP_RETENTION", "2"))
 
 HYTALE_ASSETS_API = "https://account-data.hytale.com/game-assets"
 MAVEN_BASE_URL = "https://maven.hytale.com"
@@ -318,10 +318,10 @@ def backup_current_version(server_dir, backup_base, patchline, retention):
     # Cleanup old backups: keep only N most recent versions per patchline
     patchline_dir = backup_base / patchline
     if patchline_dir.exists():
-        backups = sorted([d for d in patchline_dir.iterdir() if d.is_dir() and d != backup_dir])
-        old_backups = backups[:-retention] if retention > 0 else backups
-        for old in old_backups:
-            shutil.rmtree(old, ignore_errors=True)
+        if retention > 0:
+            backups = sorted([d for d in patchline_dir.iterdir() if d.is_dir() and d != backup_dir])
+            for old in backups[:-retention]:
+                shutil.rmtree(old, ignore_errors=True)
     log(C['G'], f"[backup] ✓ .server-backups/{patchline}/{version}/ (retention: {retention})")
 
 def restore_from_backup(backup_dir, server_dir):
