@@ -240,6 +240,10 @@ class AuthManager:
             resp = self.session.post(HYTALE_SESSION_URL,
                 headers={'Authorization': f'Bearer {self.state.access_token}', 'Content-Type': 'application/json'},
                 json={'uuid': self.state.profile_uuid}, timeout=30)
+            if resp.status_code in (401, 403) and self._refresh():
+                resp = self.session.post(HYTALE_SESSION_URL,
+                    headers={'Authorization': f'Bearer {self.state.access_token}', 'Content-Type': 'application/json'},
+                    json={'uuid': self.state.profile_uuid}, timeout=30)
             if resp.status_code == 200:
                 data = resp.json()
                 self.state.session_token = data.get('sessionToken', '')
@@ -253,7 +257,7 @@ class AuthManager:
                         self.state.session_expires = int(time.time()) + 3600
                 self.state.save(self.state_path)
                 return bool(self.state.session_token)
-            log(C['Y'], f"[auth] Session request failed (HTTP {resp.status_code})")
+            log(C['Y'], f"[auth] Session request failed (HTTP {resp.status_code}): {resp.text[:300]}")
         except Exception as e:
             log(C['Y'], f"[auth] Session error: {e}")
         return False
@@ -398,11 +402,17 @@ def get_maven_metadata(session, patchline):
         pass
     return None
 
-def get_maven_latest(session, patchline):
-    if metadata := get_maven_metadata(session, patchline):
-        if versions := re.findall(r'<version>\s*([^<]+)', metadata):
-            return versions[-1].strip()
-    return None
+def api_latest(session, auth_mgr, patchline):
+    if not auth_mgr.ensure_authenticated():
+        return None
+    try:
+        resp = session.get(f"{HYTALE_ASSETS_API}/version/{patchline}.json",
+            headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=15)
+        if resp.status_code != 200:
+            return None
+        return session.get(resp.json()['url'], timeout=15).json().get('version')
+    except Exception:
+        return None
 
 def maven_version_exists(session, patchline, version):
     if metadata := get_maven_metadata(session, patchline):
@@ -478,7 +488,7 @@ def api_download(session, auth_mgr, patchline, target_dir):
                 time.sleep(5 * (attempt + 1))
     return False
 
-def plan_update(session, server_version, patchline, local_version, local_patchline, staged_applied):
+def plan_update(session, auth_mgr, server_version, patchline, local_version, local_patchline, staged_applied):
     """Determine update strategy based on SERVER_VERSION.
 
     Priority order: local files → backups → API download
@@ -494,18 +504,18 @@ def plan_update(session, server_version, patchline, local_version, local_patchli
                 if backups := sorted([d for d in backup_dir.iterdir() if d.is_dir() and (d / "Server" / "HytaleServer.jar").exists()], reverse=True):
                     return UpdatePlan.BACKUP, backups[0].name, backups[0]
             return UpdatePlan.NONE, "", None
-        if maven_latest := get_maven_latest(session, patchline):
-            if local_version == maven_latest and (local_patchline == patchline or not local_patchline):
+        if remote := api_latest(session, auth_mgr, patchline):
+            if local_version == remote and (local_patchline == patchline or not local_patchline):
                 return UpdatePlan.NONE, "", None
-            if local_version == maven_latest and local_patchline != patchline:
-                return UpdatePlan.PATCHLINE, maven_latest, None
-            backup_path = backup_dir / maven_latest
+            if local_version == remote and local_patchline != patchline:
+                return UpdatePlan.PATCHLINE, remote, None
+            backup_path = backup_dir / remote
             if is_valid_backup(backup_path):
-                return UpdatePlan.BACKUP, maven_latest, backup_path
-            return UpdatePlan.API, maven_latest, None
+                return UpdatePlan.BACKUP, remote, backup_path
+            return UpdatePlan.API, remote, None
         if not has_jar:
             return UpdatePlan.API, "", None
-        log(C['Y'], "[update] Maven check failed, running existing server")
+        log(C['Y'], "[update] API check failed, running existing server")
         return UpdatePlan.NONE, "", None
     elif server_version == "previous":
         if not backup_dir.exists():
@@ -525,9 +535,9 @@ def plan_update(session, server_version, patchline, local_version, local_patchli
                 log(C['Y'], f"[update] Version {server_version} not found, running existing server")
                 return UpdatePlan.NONE, "", None
             die(f"Version {server_version} not available")
-        if maven_latest := get_maven_latest(session, patchline):
-            if maven_latest != server_version:
-                log(C['Y'], f"[update] Version {server_version} exists but API only serves latest ({maven_latest})")
+        if remote := api_latest(session, auth_mgr, patchline):
+            if remote != server_version:
+                log(C['Y'], f"[update] Version {server_version} exists but API only serves latest ({remote})")
                 if has_jar:
                     log(C['Y'], "[update] Running existing server")
                     return UpdatePlan.NONE, "", None
@@ -633,7 +643,8 @@ def main():
     retry = Retry(total=5, backoff_factor=2, status_forcelist=[429, 500, 502, 503, 504])
     session.mount("https://", HTTPAdapter(max_retries=retry))
     session.headers.update({"User-Agent": "HytaleServerLauncher/1.0"})
-    plan, target, backup_path = plan_update(session, SERVER_VERSION, PATCHLINE, local_version, local_patchline, staged_applied)
+    auth_mgr = AuthManager(session, HYTALE_AUTH_STATE_PATH)
+    plan, target, backup_path = plan_update(session, auth_mgr, SERVER_VERSION, PATCHLINE, local_version, local_patchline, staged_applied)
     if plan != UpdatePlan.NONE:
         log(C['C'], f"[update] Plan: {plan.value}" + (f" (target {target})" if target else ""))
     # Execute plan
@@ -656,7 +667,6 @@ def main():
         else:
             log(C['Y'], "[backup] Restore failed, running existing server")
     elif plan == UpdatePlan.API:
-        auth_mgr = AuthManager(session, HYTALE_AUTH_STATE_PATH)
         if auth_mgr.ensure_authenticated():
             download_dir = TMP_BASE / "api-download"
             shutil.rmtree(download_dir, ignore_errors=True)
@@ -680,8 +690,6 @@ def main():
             die("[auth] Authentication required")
     # Authentication for server startup
     if FLAGS['auth']:
-        if 'auth_mgr' not in locals():
-            auth_mgr = AuthManager(session, HYTALE_AUTH_STATE_PATH)
         if auth_mgr.ensure_authenticated() and auth_mgr.ensure_session():
             os.environ.update({
                 'HYTALE_SERVER_SESSION_TOKEN': auth_mgr.state.session_token,
