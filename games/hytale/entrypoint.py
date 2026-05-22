@@ -414,7 +414,10 @@ def api_latest(session, auth_mgr, patchline):
             headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=15)
         if resp.status_code != 200:
             return None
-        return session.get(resp.json()['url'], timeout=15).json().get('version')
+        version = session.get(resp.json()['url'], timeout=15).json().get('version')
+        if version:
+            log(C['C'], f"[update] Latest {patchline}: {version}")
+        return version
     except Exception:
         return None
 
