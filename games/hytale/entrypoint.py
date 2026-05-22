@@ -148,7 +148,11 @@ class AuthManager:
                 with suppress(Exception):
                     error = resp.json().get('error', '')
                     if error in ('invalid_grant', 'invalid_client', 'unauthorized_client'):
-                        self.state_path.unlink()
+                        self.state.access_token = ''
+                        self.state.access_expires = 0
+                        self.state.refresh_token = ''
+                        self.state.refresh_expires = 0
+                        self.state_path.unlink(missing_ok=True)
         except Exception as e:
             log(C['Y'], f"[auth] Refresh error: {e}")
         return False
@@ -240,7 +244,7 @@ class AuthManager:
             resp = self.session.post(HYTALE_SESSION_URL,
                 headers={'Authorization': f'Bearer {self.state.access_token}', 'Content-Type': 'application/json'},
                 json={'uuid': self.state.profile_uuid}, timeout=30)
-            if resp.status_code in (401, 403) and self._refresh():
+            if resp.status_code in (401, 403) and (self._refresh() or self._device_flow()):
                 resp = self.session.post(HYTALE_SESSION_URL,
                     headers={'Authorization': f'Bearer {self.state.access_token}', 'Content-Type': 'application/json'},
                     json={'uuid': self.state.profile_uuid}, timeout=30)
