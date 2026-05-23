@@ -229,6 +229,9 @@ class AuthManager:
             try:
                 resp = self.session.get(HYTALE_PROFILES_URL,
                     headers={'Authorization': f'Bearer {self.state.access_token}'}, timeout=30)
+                if resp.status_code in (401, 403) and (self._refresh() or self._device_flow()):
+                    resp = self.session.get(HYTALE_PROFILES_URL,
+                        headers={'Authorization': f'Bearer {self.state.access_token}'}, timeout=30)
                 if resp.status_code == 200:
                     profiles = resp.json().get('profiles', [])
                     if profiles:
@@ -412,6 +415,9 @@ def api_latest(session, auth_mgr, patchline):
     try:
         resp = session.get(f"{HYTALE_ASSETS_API}/version/{patchline}.json",
             headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=15)
+        if resp.status_code in (401, 403) and (auth_mgr._refresh() or auth_mgr._device_flow()):
+            resp = session.get(f"{HYTALE_ASSETS_API}/version/{patchline}.json",
+                headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=15)
         if resp.status_code != 200:
             return None
         version = session.get(resp.json()['url'], timeout=15).json().get('version')
