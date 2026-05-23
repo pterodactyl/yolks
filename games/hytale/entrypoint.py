@@ -221,7 +221,7 @@ class AuthManager:
             return self.session.request(method, url,
                 headers={**extra, 'Authorization': f'Bearer {self.state.access_token}'}, **kwargs)
         resp = send()
-        if resp.status_code in (401, 403) and (self._refresh() or self._device_flow()):
+        if resp.status_code == 401 and (self._refresh() or self._device_flow()):
             resp = send()
         return resp
 
