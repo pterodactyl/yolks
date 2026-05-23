@@ -215,6 +215,16 @@ class AuthManager:
             log(C['R'], f"[auth] Device flow error: {e}")
         return False
 
+    def authed_request(self, method, url, **kwargs):
+        extra = kwargs.pop('headers', {})
+        def send():
+            return self.session.request(method, url,
+                headers={**extra, 'Authorization': f'Bearer {self.state.access_token}'}, **kwargs)
+        resp = send()
+        if resp.status_code in (401, 403) and (self._refresh() or self._device_flow()):
+            resp = send()
+        return resp
+
     def ensure_session(self):
         if self.state.session_token and not (self.state.session_expires > 0 and time.time() + 60 >= self.state.session_expires):
             return True
@@ -227,11 +237,7 @@ class AuthManager:
                 pass
         if not self.state.profile_uuid:
             try:
-                resp = self.session.get(HYTALE_PROFILES_URL,
-                    headers={'Authorization': f'Bearer {self.state.access_token}'}, timeout=30)
-                if resp.status_code in (401, 403) and (self._refresh() or self._device_flow()):
-                    resp = self.session.get(HYTALE_PROFILES_URL,
-                        headers={'Authorization': f'Bearer {self.state.access_token}'}, timeout=30)
+                resp = self.authed_request('GET', HYTALE_PROFILES_URL, timeout=30)
                 if resp.status_code == 200:
                     profiles = resp.json().get('profiles', [])
                     if profiles:
@@ -244,13 +250,7 @@ class AuthManager:
                 log(C['Y'], f"[auth] Profile error: {e}")
                 return False
         try:
-            resp = self.session.post(HYTALE_SESSION_URL,
-                headers={'Authorization': f'Bearer {self.state.access_token}', 'Content-Type': 'application/json'},
-                json={'uuid': self.state.profile_uuid}, timeout=30)
-            if resp.status_code in (401, 403) and (self._refresh() or self._device_flow()):
-                resp = self.session.post(HYTALE_SESSION_URL,
-                    headers={'Authorization': f'Bearer {self.state.access_token}', 'Content-Type': 'application/json'},
-                    json={'uuid': self.state.profile_uuid}, timeout=30)
+            resp = self.authed_request('POST', HYTALE_SESSION_URL, json={'uuid': self.state.profile_uuid}, timeout=30)
             if resp.status_code == 200:
                 data = resp.json()
                 self.state.session_token = data.get('sessionToken', '')
@@ -413,11 +413,7 @@ def api_latest(session, auth_mgr, patchline):
     if not auth_mgr.ensure_authenticated():
         return None
     try:
-        resp = session.get(f"{HYTALE_ASSETS_API}/version/{patchline}.json",
-            headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=15)
-        if resp.status_code in (401, 403) and (auth_mgr._refresh() or auth_mgr._device_flow()):
-            resp = session.get(f"{HYTALE_ASSETS_API}/version/{patchline}.json",
-                headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=15)
+        resp = auth_mgr.authed_request('GET', f"{HYTALE_ASSETS_API}/version/{patchline}.json", timeout=15)
         if resp.status_code != 200:
             return None
         version = session.get(resp.json()['url'], timeout=15).json().get('version')
@@ -439,15 +435,13 @@ def is_valid_backup(backup_path):
 def api_download(session, auth_mgr, patchline, target_dir):
     for attempt in range(3):
         try:
-            resp = session.get(f"{HYTALE_ASSETS_API}/version/{patchline}.json",
-                headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=30)
+            resp = auth_mgr.authed_request('GET', f"{HYTALE_ASSETS_API}/version/{patchline}.json", timeout=30)
             if resp.status_code != 200:
                 continue
             manifest_data = session.get(resp.json()['url'], timeout=30).json()
             version, download_url, sha256_expected = manifest_data['version'], manifest_data['download_url'], manifest_data.get('sha256')
             log(C['C'], f"[api] Remote: {version}")
-            signed_dl = session.get(f"{HYTALE_ASSETS_API}/{download_url}",
-                headers={'Authorization': f'Bearer {auth_mgr.state.access_token}'}, timeout=30).json()['url']
+            signed_dl = auth_mgr.authed_request('GET', f"{HYTALE_ASSETS_API}/{download_url}", timeout=30).json()['url']
             zip_path = target_dir / "server.zip"
             target_dir.mkdir(parents=True, exist_ok=True)
             resp = session.get(signed_dl, stream=True, timeout=900)
