@@ -40,6 +40,8 @@ is tagged correctly.
     * `ghcr.io/pterodactyl/games:source`
   * [`hytale`](/games/hytale)
     * `ghcr.io/pterodactyl/games:hytale`
+  * [`conan_exiles`](/games/conan_exiles)
+    * `ghcr.io/pterodactyl/games:conan_exiles`
 
 * [`golang`](/go)
   * [`go1.14`](/go/1.14)
