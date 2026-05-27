@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-FROM 		--platform=$TARGETOS/$TARGETARCH debian:bullseye-slim
+FROM 		--platform=$TARGETOS/$TARGETARCH debian:bookworm-slim
 
 LABEL       author="Isaac A." maintainer="isaac@isaacs.site"
 
@@ -32,8 +32,12 @@ ENV         DEBIAN_FRONTEND=noninteractive
 RUN			dpkg --add-architecture i386 \
 			&& apt update \
 			&& apt upgrade -y \
-			&& apt install -y lib32gcc-s1 lib32stdc++6 unzip curl iproute2 tzdata libgdiplus libsdl2-2.0-0:i386 \
-			&& curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+			&& apt install -y lib32gcc-s1 lib32stdc++6 unzip curl gnupg ca-certificates iproute2 tzdata libgdiplus libsdl2-2.0-0:i386 \
+			&& mkdir -p /etc/apt/keyrings \
+			&& curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280' | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+			&& echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_14.x bookworm main" > /etc/apt/sources.list.d/nodesource.list \
+			&& printf "Package: nodejs\nPin: origin deb.nodesource.com\nPin-Priority: 1001\n" > /etc/apt/preferences.d/nodesource \
+			&& apt update \
 			&& apt install -y nodejs \
 			&& mkdir /node_modules \
 			&& npm install --prefix / ws \
