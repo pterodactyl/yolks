@@ -33,23 +33,6 @@ export TZ
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 export INTERNAL_IP
 
-# Set environment for Steam Proton
-if [ -f "/usr/local/bin/proton" ]; then
-	if [ -n "${SRCDS_APPID}" ]; then
-		mkdir -p "/home/container/.steam/steam/steamapps/compatdata/${SRCDS_APPID}"
-		export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/container/.steam/steam"
-		export STEAM_COMPAT_DATA_PATH="/home/container/.steam/steam/steamapps/compatdata/${SRCDS_APPID}"
-		# Fix for pipx with protontricks
-		export PATH=$PATH:/root/.local/bin
-	else
-		echo -e "----------------------------------------------------------------------------------"
-		echo -e "WARNING!!! SRCDS_APPID is missing and must be set when using Proton"
-		echo -e "Server will now terminate"
-		echo -e "----------------------------------------------------------------------------------"
-		exit 1
-	fi
-fi
-
 # Switch to the container's working directory
 cd /home/container || exit 1
 
