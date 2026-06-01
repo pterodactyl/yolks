@@ -27,19 +27,26 @@ LABEL       author="William V." maintainer="william.venner@infraly.co"
 LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
 LABEL       org.opencontainers.image.licenses=MIT
 
-USER		root
+USER        root
 
-COPY        --from=ghcr.io/pterodactyl/yolks:java_25 entrypoint.sh /java.sh
-RUN 		chmod +x /java.sh
-
-RUN			apt-get update -y \
-				&& apt-get install -y unzip jq \
-				&& rm -rf /var/lib/apt/lists/*
+RUN         apt update -y \
+            && apt install -y \
+                tini \
+                unzip \
+                zip \
+                dbus \
+                file \
+                python3-minimal \
+                python3-requests \
+            && apt clean \
+            && rm -rf /var/lib/apt/lists/*
 
 USER        container
 ENV         USER=container HOME=/home/container
 WORKDIR     /home/container
 
-COPY 		./entrypoint.sh /entrypoint.sh
+COPY        --chown=container:container ./entrypoint.py /entrypoint.py
+RUN         chmod +x /entrypoint.py
 
-CMD         [ "/bin/bash", "/entrypoint.sh" ]
+ENTRYPOINT  ["/usr/bin/tini", "-g", "--"]
+CMD         ["/entrypoint.py"]
