@@ -16,8 +16,8 @@ and network usage by pre-installing common installation dependencies such as `cu
 a specific version of software and allow different Eggs within Pterodactyl to switch out the underlying implementation. An
 example of this would be something like Java or Python which are used for running bots, Minecraft servers, etc.
 
-All of these images are available for `linux/amd64` and `linux/arm64` versions, unless otherwise specified, to use
-these images on an arm64 system, no modification to them or the tag is needed, they should just work.
+All of these images are available for `linux/amd64`, `linux/arm64`, and `linux/ppc64le` versions, unless otherwise specified, to use
+these images on an arm64 or ppc64le system, no modification to them or the tag is needed, they should just work.
 
 ## Contributing
 
