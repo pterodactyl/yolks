@@ -3,25 +3,27 @@ set -e
 
 cd /home/container
 
+HYTALE_DOWNLOADER="./hytale-downloader/hytale-downloader-linux"
+
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 
 	echo -e "Checking for Hytale server update..."
 
-	if [[ -f version ]]; then
-		curversion=$(./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -print-version | tee /dev/tty)
-	fi
+	curversion=$($HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -print-version | tee /dev/tty)
 
 	if ! [[ -e version ]] || [ "$curversion" != "$(cat "version")" ]; then
-		if [[ -f version ]]; then
-			echo -e "New update available, downloading version $curversion..."
+	    if [ -z ${SKIP_UPDATE} ] || [ "${SKIP_UPDATE}" == "0" ]; then
+			echo -e "New update available, downloading version: $curversion..."
+			$HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
+		else
+			echo -e "New update available: $curversion"
+			echo -e "Not updating game server as skip update was set to 1. Starting Server"
 		fi
-
-		./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
 
 		# Write the current version if it wasn't set before
 		if [[ -z "$curversion" ]]; then
-			curversion=$(./hytale-downloader/hytale-downloader-linux -patchline "$HYTALE_PATCHLINE" -print-version | tee /dev/tty)
+			curversion=$($HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -print-version | tee /dev/tty)
 		fi
 
 		unzip -o HytaleServer.zip -d .
