@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Pterodactyl
+# Copyright (c) 2026 Pterodactyl
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,48 @@
 # SOFTWARE.
 #
 
-FROM 		--platform=$TARGETOS/$TARGETARCH debian:bookworm-slim
+FROM --platform=$TARGETOS/$TARGETARCH debian:trixie-slim
 
-LABEL       author="Isaac A." maintainer="isaac@isaacs.site"
+LABEL author="Isaac A." maintainer="isaac@isaacs.site"
 
-LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
-LABEL       org.opencontainers.image.licenses=MIT
+LABEL org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
+LABEL org.opencontainers.image.licenses=MIT
 
-ENV         DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive 
 
-RUN			dpkg --add-architecture i386 \
-			&& apt update \
-			&& apt upgrade -y \
-			&& apt install -y lib32gcc-s1 lib32stdc++6 unzip curl gnupg ca-certificates iproute2 tzdata libgdiplus libsdl2-2.0-0:i386 \
-			&& mkdir -p /etc/apt/keyrings \
-			&& curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280' | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-			&& echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_14.x bookworm main" > /etc/apt/sources.list.d/nodesource.list \
-			&& printf "Package: nodejs\nPin: origin deb.nodesource.com\nPin-Priority: 1001\n" > /etc/apt/preferences.d/nodesource \
-			&& apt update \
-			&& apt install -y nodejs \
-			&& mkdir /node_modules \
-			&& npm install --prefix / ws \
-			&& useradd -d /home/container -m container
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg \
+    unzip \
+    iproute2 \
+    tzdata \
+    libgdiplus \
+    lib32gcc-s1 \
+    lib32stdc++6 \
+    libsdl2-2.0-0:i386 \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+    | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && printf '%s\n' \
+    'Types: deb' \
+    'URIs: https://deb.nodesource.com/node_24.x' \
+    'Suites: nodistro' \
+    'Components: main' \
+    'Architectures: amd64' \
+    'Signed-By: /etc/apt/keyrings/nodesource.gpg' \
+    > /etc/apt/sources.list.d/nodesource.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nodejs \
+    && mkdir -p /srv/node \
+    && cd /srv/node \
+    && npm install ws \
+    && mv node_modules /node_modules \
+    && cd / \
+    && rm -rf /srv/node /var/lib/apt/lists/* \
+    && useradd -d /home/container -m container
 
 USER 		container
 ENV  		USER=container HOME=/home/container
@@ -51,4 +71,4 @@ WORKDIR 	/home/container
 COPY 		./entrypoint.sh /entrypoint.sh
 COPY 		./wrapper.js /wrapper.js
 
-CMD			[ "/bin/bash", "/entrypoint.sh" ]
+CMD ["/bin/bash", "/entrypoint.sh"]
