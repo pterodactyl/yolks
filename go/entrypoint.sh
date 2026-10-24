@@ -37,6 +37,20 @@ cd /home/container || exit 1
 printf "\033[1m\033[33mcontainer@pterodactyl~ \033[0mgo version\n"
 go version
 
+# Check for end-of-life marker
+if [ "${YOLK_EOL_NAG_WARNING+x}" ]; then
+	echo "======================================================================"
+	echo "DEPRECATION WARNING:"
+	echo "This version of the Go yolk has been marked as end-of-life."
+	echo "Please migrate to a supported version as soon as possible to ensure"
+	echo "continued security updates and support."
+	echo "This image will be removed/disabled in the near future."
+	echo "======================================================================"
+
+	echo "Execution will continue in ${YOLK_EOL_NAG_DELAY:-10} seconds..."
+	sleep "${YOLK_EOL_NAG_DELAY:-10}"
+fi
+
 # Convert all of the "{{VARIABLE}}" parts of the command into the expected shell
 # variable format of "${VARIABLE}" before evaluating the string and automatically
 # replacing the values.

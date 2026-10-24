@@ -28,11 +28,13 @@ LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolk
 LABEL       org.opencontainers.image.licenses=MIT
 
 RUN         apk add --update --no-cache ca-certificates tzdata \
-				&& adduser -D -h /home/container container
+			&& adduser -D -h /home/container container
 
 USER        container
 ENV         USER=container HOME=/home/container
 WORKDIR     /home/container
 
-COPY        ./../entrypoint.sh /entrypoint.sh
-CMD         [ "/bin/ash", "/entrypoint.sh" ]
+ENV			YOLK_EOL_NAG_WARNING=1
+
+COPY		--chmod=755 --chown=root:root ../entrypoint.sh /entrypoint.sh
+ENTRYPOINT	["/entrypoint.sh"]
