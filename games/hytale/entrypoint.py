@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Execution flow (4 phases):
-1. Prepare filesystem/defaults (migrate flat layouts; retain Server-era config/auth)
+1. Prepare filesystem/defaults (migrate legacy root data and retain Server-era config/auth)
 2. Resolve update plan and stage server files (local → backup → API priority)
 3. Acquire auth tokens when enabled (OAuth2 device flow + game session)
 4. Parse and exec startup command with signal forwarding to server process
 Only the untouched installer config from pelican-eggs/games-standalone@fe8755ce may be replaced.
+Server/.version marks the Server-working-directory layout introduced in March.
 """
 import os, sys, json, signal, subprocess, time, zipfile, hashlib, shutil, re, shlex, tempfile
 from pathlib import Path
@@ -754,7 +755,8 @@ def plan_update(session, auth_mgr, server_version, patchline, local_version, loc
 
 def migrate_legacy_layout():
     moves, placeholders = [], set()
-    server_layout = path_present(SERVER_JAR) and not path_present(ROOT_DIR / "HytaleServer.jar")
+    server_layout = (path_present(SERVER_JAR) and not path_present(ROOT_DIR / "HytaleServer.jar")
+        and path_present(SERVER_DIR / VERSION_FILE))
     empty_directory = lambda path: not path.is_symlink() and path.is_dir() and not any(path.iterdir())
     def installer_placeholder(path):
         return empty_directory(path) or (not server_layout and path == SERVER_DIR / "config.json"
@@ -781,9 +783,6 @@ def migrate_legacy_layout():
         if not server_layout:
             for filename in USER_CONFIG_FILES:
                 queue(ROOT_DIR / filename, SERVER_DIR / filename)
-        for filename in (VERSION_FILE, PATCHLINE_FILE):
-            if not path_present(SERVER_DIR / filename):
-                queue(ROOT_DIR / filename, SERVER_DIR / filename)
         credentials = ("auth.enc", "auth.key")
         server_credentials = any(path_present(SERVER_DIR / name) for name in credentials)
         if not server_layout and any(path_present(ROOT_DIR / name) for name in credentials):
@@ -803,6 +802,9 @@ def migrate_legacy_layout():
             queue(root_early, early_dest, directory=True)
         else:
             queue(early_source, early_dest, directory=True)
+        for filename in (VERSION_FILE, PATCHLINE_FILE):
+            if not path_present(SERVER_DIR / filename):
+                queue(ROOT_DIR / filename, SERVER_DIR / filename)
         queue(ROOT_DIR / "HytaleServer.jar", SERVER_JAR)
         old_roots = [source.parent.resolve() / source.name for source, _ in moves]
         new_roots = [destination.parent.resolve() / destination.name for _, destination in moves]
