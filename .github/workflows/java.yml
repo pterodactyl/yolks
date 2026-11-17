@@ -31,6 +31,7 @@ jobs:
           - 19j9
           - 21
           - 21-misc-packages
+          - 21-http
           - 21-azul
           - 21-graalvm
           - 24

@@ -48,6 +48,14 @@ if [ -d /opt/java/legacy ]; then
 	done
 fi
 
+# CVE-2026-114938 (Java4Shell): the AVX-512 Base64 decode intrinsic in JDK 17.0.6+ writes out of bounds.
+# Turn it off for every JVM in the container, appended so an egg's own JAVA_TOOL_OPTIONS can't drop it.
+# JDK 8 isn't affected and refuses to start with the option, even with -XX:+IgnoreUnrecognizedVMOptions.
+# Remove once every image ships a fixed JDK (17.0.21.1, 21.0.13.1, 25.0.5.1). 18, 19 and 24 never will.
+if ! java -version 2>&1 | grep -q 'version "1\.'; then
+	export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:+${JAVA_TOOL_OPTIONS} }-XX:-UseBASE64Intrinsics"
+fi
+
 # Print Java version
 printf "\033[1m\033[33mcontainer@pterodactyl~ \033[0mjava -version\n"
 java -version
