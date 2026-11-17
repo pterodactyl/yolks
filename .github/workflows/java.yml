@@ -50,7 +50,8 @@ jobs:
         with:
           context: ./java
           file: ./java/${{ matrix.tag }}/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          # ibm-semeru-runtimes:open-16-jdk has no arm64 image
+          platforms: ${{ matrix.tag == '16j9' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
           push: true
           tags: |
             ghcr.io/pterodactyl/yolks:java_${{ matrix.tag }}
