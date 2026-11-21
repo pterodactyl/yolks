@@ -35,7 +35,6 @@ PENDING_INSTALL = ROOT_DIR / ".server-install-pending"
 SERVER_VERSION = os.getenv("SERVER_VERSION", "latest")
 AUTO_UPDATE = os.getenv("AUTO_UPDATE", "1") == "1"
 PATCHLINE = os.getenv("PATCHLINE", "release")
-TRANSPORT = os.getenv("TRANSPORT", "QUIC").upper()
 
 FLAGS = {
     'auth': os.getenv("HYTALE_API_AUTH", "1") == "1",
@@ -854,10 +853,6 @@ def migrate_legacy_layout():
     except Exception as e:
         die(f"[migrate] Refusing launch with an incomplete or unsupported migration: {e}")
 
-def validate_transport(transport):
-    if transport not in ("QUIC", "QUICHE"):
-        die(f"[startup] Unsupported transport {transport!r}; use QUIC or QUICHE (an alternative QUIC backend, not TCP)")
-
 NATIVE_VALUE_OPTIONS = set(("log bind transport prefab-cache assets mods early-plugins "
     "generate-asset-schema generate-config-schema world-gen backup-frequency backup-dir "
     "backup-max-count backup-archive-max-count owner-name owner-uuid client-pid universe "
@@ -931,14 +926,6 @@ def backup_integer(name, default):
 
 def managed_server_flags(options):
     flags = []
-    if "transport" in options:
-        for transport in options["transport"]:
-            validate_transport(transport)
-        transport = options["transport"][-1]
-    else:
-        transport = TRANSPORT
-        validate_transport(transport)
-        flags.extend(["--transport", transport])
     for enabled, name in (("allow_op", "allow-op"), ("early_plugins", "accept-early-plugins"),
             ("disable_sentry", "disable-sentry"), ("ignore_broken_mods", "ignore-broken-mods"),
             ("world_backup", "backup")):
@@ -956,7 +943,7 @@ def managed_server_flags(options):
                 ("backup-max-count", "BACKUP_MAX_COUNT", 5), ("backup-archive-max-count", "BACKUP_ARCHIVE_MAX_COUNT", 5)):
             if option not in options:
                 flags.extend(["--" + option, backup_integer(name, default)])
-    return flags, transport
+    return flags
 
 def startup_command():
     startup_json = os.getenv("STARTUP_JSON", "")
@@ -1094,7 +1081,6 @@ def main():
     os.chdir(SERVER_DIR)
     # Build JVM and server flags for automatic injection
     jvm_flags = [f"-Djava.io.tmpdir={TMP_BASE}", "-Dterminal.jline=false", "-Dterminal.ansi=true"]
-    effective_transport = None
 
     # Inject flags if this is a Java command with -jar
     if cmd and any("java" in str(arg).lower() for arg in cmd[:3]) and "-jar" in cmd:
@@ -1109,7 +1095,7 @@ def main():
         if launch_version and launch_patchline and (launch_version != final_version or launch_patchline != PATCHLINE):
             die("[startup] STARTUP JAR does not match the selected server version/patchline")
         pre_jar, post_jar = cmd[:jar_flag_idx], cmd[jar_idx+1:]
-        server_flags, effective_transport = managed_server_flags(native_options(post_jar))
+        server_flags = managed_server_flags(native_options(post_jar))
         option_environment = {name: os.getenv(name) for name in JAVA_OPTION_ENV}
         try:
             explicit_jvm = pre_jar[1:] + [
@@ -1162,11 +1148,10 @@ def main():
             except Exception as e:
                 log(C['Y'], f"[aot] Automatic cache bypassed: {e}")
     # Warn if host UDP buffers are smaller than recommended for QUIC traffic to improve latency
-    if effective_transport in ("QUIC", "QUICHE"):
-        for buf_type, buf_path in [("receive", "/proc/sys/net/core/rmem_max"), ("send", "/proc/sys/net/core/wmem_max")]:
-            with suppress(Exception):
-                if (current := int(Path(buf_path).read_text().strip())) < 2097152:
-                    log(C['Y'], f"[quic] UDP {buf_type} buffer low ({current} bytes)")
+    for buf_type, buf_path in [("receive", "/proc/sys/net/core/rmem_max"), ("send", "/proc/sys/net/core/wmem_max")]:
+        with suppress(Exception):
+            if (current := int(Path(buf_path).read_text().strip())) < 2097152:
+                log(C['Y'], f"[quic] UDP {buf_type} buffer low ({current} bytes)")
     # Final version confirmation before launch
     log(C['G'], f"[startup] Launching: {final_version} ({final_patchline})")
     log(C['G'], f"[startup] ✓ Ready in {int(time.time() - start_time)}s")
